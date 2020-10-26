@@ -1,0 +1,55 @@
+@media screen {
+  .print-content {
+    display: none;
+  }
+}
+@media print {
+  html,
+  body {
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+    page-break-after: avoid;
+    page-break-before: avoid;
+  }
+}
+
+.print-content {
+  width: 430px;
+}
+#DeliveryTicket .ticket-content {
+  margin: 20px;
+}
+
+.ticket-header h3,
+.ticket-header h4,
+.ticket-footer h3,
+.ticket-footer h4,
+.ticket-footer h5 {
+  text-align: center;
+}
+
+#DeliveryTicket .qtty-persons,
+#DeliveryTicket .table-item,
+#DeliveryTicket .total {
+  display: flex;
+  font-size: 1rem;
+}
+
+#DeliveryTicket .table-item span,
+#DeliveryTicket .total span {
+  width: 200px;
+}
+
+#DeliveryTicket .product-description {
+  font-weight: bold;
+}
+
+.total {
+  margin-top: 10px;
+}
+
+#DeliveryTicket .qtty-persons span {
+  width: 200px;
+}

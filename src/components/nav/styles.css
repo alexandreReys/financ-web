@@ -1,0 +1,47 @@
+#navbar .menu {
+  margin-top: 70px;
+}
+
+#navbar .logged-user {
+  color: wheat;
+}
+
+#navbar .qtty-items {
+  font-size: 0.7rem;
+  margin-right: 15px;
+}
+
+#navbar .navbar-brand {
+  font-size: 1.7rem;
+}
+
+#navbar .navbar-address {
+  font-size: 0.8rem;
+  color: yellow;
+  margin-left: 20px;
+  height: 45px;
+}
+
+#navbar .navbar-address-click {
+  cursor: pointer;
+  font-style: italic;
+  text-decoration: underline;
+  color: aquamarine;
+}
+
+#navbar .btn-conta {
+  font-size: 0.8rem;
+  color: red;
+}
+#navbar .btn-cart {
+  font-size: 1.4rem;
+  color: yellow;
+  cursor: pointer;
+}
+
+#navbar .btn-logout {
+  padding: 5px 13px 5px 13px;
+  border-radius: 12px;
+  background: wheat;
+  font-size: 0.8rem;
+}

@@ -1,0 +1,84 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Rubik&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+  font-family: Roboto, Rubik, sans-serif !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+  font-family: Roboto, sans-serif !important;
+}
+
+input,
+select,
+textarea {
+  padding: 0 0 0 5px;
+}
+
+/* .oficina-form footer button { */
+.btn-man-forn {
+  width: 55%;
+  min-width: 100px;
+  border: 0;
+  box-shadow: 0 4px 4px #000;
+  border-radius: 10px;
+  background: rgb(53, 53, 253);
+  padding: 15px 1px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  cursor: point;
+  transition: background 0.5s;
+}
+
+/* .oficina-form footer button:hover { */
+.btn-man-forn:hover {
+  background: rgb(0, 0, 78);
+}
+
+.arrow-back-abs {
+  /* position: absolute; */
+  font-size: 5rem;
+  /* float: inline-start; */
+  cursor: pointer;
+  padding-bottom: 0 !important;
+}
+
+.arrow-back {
+  /* position: absolute; */
+  font-size: 4rem;
+  float: inline-start;
+  cursor: pointer;
+}
+
+.app-content {
+  display: grid;
+  grid-template-columns: 1fr 8fr;
+  grid-template-rows: 100%;
+}
+
+.column-left {
+  text-align: left;
+}
+.column-right {
+  text-align: right;
+}

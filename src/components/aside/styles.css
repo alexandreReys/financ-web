@@ -1,0 +1,14 @@
+.app-aside {
+  min-height: 100vh;
+  /* height: 40vh;  para tamanho mobile */
+  background: rgb(36, 36, 35);
+}
+
+.container-aside {
+  padding: 15vh 10px 40vh;
+  color: cyan;
+}
+
+.container-aside p {
+  cursor: pointer;
+}

@@ -1,0 +1,17 @@
+.test-modal {
+  margin-top: 100px;
+  text-align: center;
+}
+
+.test-modal .openButton {
+  padding: 20px 100px;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: blue;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 4px #000;
+}
+.test-modal .openButton:focus {
+  border: none;
+}
