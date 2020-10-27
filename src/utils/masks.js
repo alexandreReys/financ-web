@@ -56,7 +56,7 @@ function pisMask(value) {
 
 function moneyMask(value) {
   const config = {
-    unit: "R$ ",
+    unit: "R$",
     separator: ",",
     delimiter: ".",
   };
