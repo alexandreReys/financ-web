@@ -3,6 +3,9 @@ import { history } from "routes/history";
 
 import { TextInputMask } from "react-web-masked-text";
 
+import Sweetalert2 from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
 import store from "store";
 import * as actions from "store/actions";
 import * as utils from "utils";
@@ -10,10 +13,12 @@ import * as masks from "utils/masks";
 
 import "./styles.css";
 
+const Swal = withReactContent(Sweetalert2);
+
 const Notifications = () => {
     const [estimatedPropertyValue, setEstimatedPropertyValue] = useState(550000);
     const [financingAmount, setFinancingAmount] = useState(276913);
-    const [financingTerm, setFinancingTerm] = useState(3);
+    const [financingTerm, setFinancingTerm] = useState(360);
     const [annualRate, setAnnualRate] = useState(5.12);
     const [insurancePercentage, setInsurancePercentage] = useState(5.799);
     const [tariffValue, setTariffValue] = useState(25);
@@ -26,6 +31,129 @@ const Notifications = () => {
 
     const handleExit = () => {
         history.push("/");
+    };
+
+    const handleSubmit = () => {
+
+        const validateFields = (values) => {
+            if (!values.estimatedPropertyValueFloat || values.estimatedPropertyValueFloat < 0) {
+                validateErrorMessage("Campo Valor Estimado do Imovel é obrigatório !!");
+                return false;
+            }
+            if (!values.financingAmountFloat || values.financingAmountFloat < 0) {
+                validateErrorMessage("Campo Valor do Financiamento é obrigatório !!");
+                return false;
+            }
+            if (!values.financingTermFloat || values.financingTermFloat < 0) {
+                validateErrorMessage("Campo Prazo do Financiamento é obrigatório !!");
+                return false;
+            }
+            if (values.financingTermFloat > 720) {
+                validateErrorMessage("Campo Prazo do Financiamento fora dos limites permitidos !!");
+                return false;
+            }
+            if (!values.annualRateFloat || values.annualRateFloat < 0) {
+                validateErrorMessage("Campo Taxa Efetiva Anual de Juros é obrigatório !!");
+                return false;
+            }
+            if (!values.insurancePercentageFloat || values.insurancePercentageFloat < 0) {
+                validateErrorMessage("Campo % Seguro é obrigatório !!");
+                return false;
+            }
+            if (!values.tariffValueFloat || values.tariffValueFloat < 0) {
+                validateErrorMessage("Campo Valor das Tarifas é obrigatório !!");
+                return false;
+            }
+
+            return true;
+        };
+        const validateErrorMessage = (message) => {
+            Swal.fire({
+                icon: "error",
+                title: message,
+                text: "Oops ...",
+                position: "top-end",
+                background: "yellow",
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+            });
+        };
+        const fixedParse = (value) => {
+            return parseFloat(value.toFixed(2))
+        };
+        const setList = (financingAmount, annualRate, financingTerm, insurancePercentage, tariffValue) => {
+            var response = [];
+
+            const calculateMonthlyRate = (annualRate) => {
+                let v1 = (annualRate + 100) / 100;
+                let v2 = (1 / 12);
+                return ((v1 ** v2) - 1) * 100;
+            };
+            const monthlyRate = calculateMonthlyRate(annualRate);
+
+            var financingValue = financingAmount;
+            const ammortization = fixedParse(financingAmount / financingTerm);
+
+            for (var index = 1; index <= financingTerm; index++) {
+                const obj = setListItem(
+                    index, financingValue, monthlyRate, ammortization,
+                    insurancePercentage, tariffValue, financingTerm
+                );
+
+                financingValue = obj.balance;
+                response.push(obj);
+            };
+
+            return response;
+        };
+        const setListItem = (
+            index, financingValue, monthlyRate, ammortization, 
+            insurancePercentage, tariffValue, financingTerm
+        ) => {
+            const interestValue = fixedParse((financingValue * monthlyRate) / 100);
+            const currentValue = fixedParse(financingValue + interestValue);
+            const insuranceValue = fixedParse((interestValue + ammortization) * (insurancePercentage / 100));
+            const ajValue = fixedParse(interestValue + ammortization);
+            var monthlyPayment = fixedParse(interestValue + ammortization + insuranceValue + tariffValue);
+            var balance = 0;
+
+            if (index !== financingTerm) {
+                balance = fixedParse(currentValue - ajValue);
+            } else {
+                const dif = fixedParse(currentValue - ajValue);
+                monthlyPayment += dif;
+                balance = 0;
+            };
+
+            return {
+                index, financingValue, interestValue, currentValue, ammortization,
+                insuranceValue, tariffValue, ajValue, monthlyPayment, balance
+            };
+        };
+
+        var estimatedPropertyValueFloat = utils.MoneyMaskedToFloat(estimatedPropertyValue);
+        var financingAmountFloat = utils.MoneyMaskedToFloat(financingAmount);
+        var financingTermFloat = utils.MoneyMaskedToFloat(financingTerm);
+        var annualRateFloat = utils.MoneyMaskedToFloat(annualRate);
+        var insurancePercentageFloat = utils.MoneyMaskedToFloat(insurancePercentage);
+        var tariffValueFloat = utils.MoneyMaskedToFloat(tariffValue);
+
+        if (!validateFields({
+            estimatedPropertyValueFloat, financingAmountFloat, financingTermFloat,
+            annualRateFloat, insurancePercentageFloat, tariffValueFloat,
+        })) {
+            setArrayValues([]);
+            return false;
+        };
+
+
+        const list = setList(
+            financingAmountFloat, annualRateFloat, financingTermFloat,
+            insurancePercentageFloat, tariffValueFloat,
+        );
+
+        setArrayValues(list);
     };
 
     return (
@@ -180,31 +308,15 @@ const Notifications = () => {
 
             <div>
                 <button
-                    style={{
-                        marginTop: 30,
-                        marginLeft: 30,
-                        padding: 20,
-                        borderRadius: 10,
-                    }}
-                    onClick={() => {
-                        const parcelas = x(
-                            utils.MoneyMaskedToFloat(financingAmount),
-                            utils.MoneyMaskedToFloat(annualRate),
-                            utils.MoneyMaskedToFloat(financingTerm),
-                            utils.MoneyMaskedToFloat(insurancePercentage),
-                            utils.MoneyMaskedToFloat(tariffValue),
-                        );
-
-                        console.log(parcelas);
-                        setArrayValues(parcelas);
-                    }}
+                    style={{ marginTop: 30, marginLeft: 30, padding: 20, borderRadius: 10 }}
+                    onClick={() => handleSubmit()}
                 >
                     Calcular
                 </button>
             </div>
 
-            <table class="table" style={{ marginTop: 30 }}>
-                <thead>
+            <table className="table" style={{ marginTop: 30 }}>
+                <thead style={{ fontSize: "0.9rem" }}>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Saldo Inicial</th>
@@ -221,11 +333,11 @@ const Notifications = () => {
                         <th scope="col">Saldo Devedor</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody style={{ fontSize: "0.8rem" }}>
 
-                    { arrayValues.map( (v) => {
+                    {arrayValues.map((v) => {
                         return (
-                            <tr>
+                            <tr key={v.index}>
                                 <th scope="row">{v.index}</th>
                                 <td>{masks.moneyMask(v.financingValue)}</td>
                                 <td>{masks.moneyMask(v.interestValue)}</td>
@@ -247,54 +359,8 @@ const Notifications = () => {
                 </tbody>
             </table>
 
-
         </div>
     );
-};
-
-
-
-
-
-const fixedParse = (value) => parseFloat(value.toFixed(2));
-
-const x = (financingAmount, annualRate, financingTerm, insurancePercentage, tariffValue) => {
-    var response = [];
-
-    const calculateMonthlyRate = (annualRate) => {
-        let v1 = (annualRate + 100) / 100;
-        let v2 = (1 / 12);
-        return ((v1 ** v2) - 1) * 100;
-    };
-    const monthlyRate = calculateMonthlyRate(annualRate);
-
-    var financingValue = financingAmount;
-    const ammortization = fixedParse(financingAmount / financingTerm);
-
-    for (var index = 1; index <= financingTerm; index++) {
-        const obj = y(
-            index, financingValue, monthlyRate, ammortization, insurancePercentage, tariffValue
-        );
-
-        financingValue = obj.balance;
-        response.push(obj);
-    };
-
-    return response;
-};
-
-const y = (index, financingValue, monthlyRate, ammortization, insurancePercentage, tariffValue) => {
-    const interestValue = fixedParse((financingValue * monthlyRate) / 100);
-    const currentValue = fixedParse(financingValue + interestValue);
-    const insuranceValue = fixedParse((interestValue + ammortization) * (insurancePercentage / 100));
-    const ajValue = fixedParse(interestValue + ammortization);
-    const monthlyPayment = fixedParse(interestValue + ammortization + insuranceValue + tariffValue);
-    const balance = fixedParse(currentValue - ajValue);
-
-    return {
-        index, financingValue, interestValue, currentValue, ammortization,
-        insuranceValue, tariffValue, ajValue, monthlyPayment, balance
-    };
 };
 
 
