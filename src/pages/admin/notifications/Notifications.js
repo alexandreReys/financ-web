@@ -355,28 +355,28 @@ const Notifications = () => {
 
             <div style={{ display: "flex" }} className="notifications-content">
                 <view style={{ display: "flex", flexDirection: "column" }}>
-                    <text style={{fontWeight: "bold"}}>Juros devidos</text>
-                    <text>{masks.moneyMask(interestTotal)}</text>
+                    <text style={{fontWeight: "bold", color: "navy"}}>Juros devidos</text>
+                    <text style={{fontWeight: "bold", color: "blue"}}>{masks.moneyMask(interestTotal)}</text>
                 </view>
 
                 <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
-                    <text style={{fontWeight: "bold"}}>Principal devido</text>
-                    <text>{masks.moneyMask(mainDebtTotal)}</text>
+                    <text style={{fontWeight: "bold", color: "navy"}}>Principal devido</text>
+                    <text style={{fontWeight: "bold", color: "blue"}}>{masks.moneyMask(mainDebtTotal)}</text>
                 </view>
 
                 <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
-                    <text style={{fontWeight: "bold"}}>Total devido</text>
-                    <text>{masks.moneyMask(debtTotal)}</text>
+                    <text style={{fontWeight: "bold", color: "navy"}}>Total devido</text>
+                    <text style={{fontWeight: "bold", color: "blue"}}>{masks.moneyMask(debtTotal)}</text>
                 </view>
 
                 <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
-                    <text style={{fontWeight: "bold"}}>Prestação maxima</text>
-                    <text>{masks.moneyMask(maximumParcelValue)}</text>
+                    <text style={{fontWeight: "bold", color: "navy"}}>Prestação maxima</text>
+                    <text style={{fontWeight: "bold", color: "blue"}}>{masks.moneyMask(maximumParcelValue)}</text>
                 </view>
 
                 <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
-                    <text style={{fontWeight: "bold"}}>Renda Minima</text>
-                    <text>{masks.moneyMask(minimumIncome)}</text>
+                    <text style={{fontWeight: "bold", color: "navy"}}>Renda Minima</text>
+                    <text style={{fontWeight: "bold", color: "blue"}}>{masks.moneyMask(minimumIncome)}</text>
                 </view>
 
             </div>
@@ -384,7 +384,7 @@ const Notifications = () => {
 
             <table className="table" style={{ marginTop: 30 }}>
                 <thead style={{ fontSize: "0.9rem" }}>
-                    <tr>
+                    <tr style={{fontWeight: "bold", color: "navy"}}>
                         <th scope="col">#</th>
                         <th scope="col">Saldo Inicial</th>
                         <th scope="col">Juros</th>
