@@ -27,6 +27,7 @@ const Notifications = () => {
     const [mainDebtTotal, setMainDebtTotal] = useState(0);
     const [debtTotal, setDebtTotal] = useState(0);
     const [maximumParcelValue, setMaximumParcelValue] = useState(0);
+    const [minimumIncome, setMinimunIncome] = useState(0);
 
     const [arrayValues, setArrayValues] = useState([]);
 
@@ -72,6 +73,7 @@ const Notifications = () => {
 
             return true;
         };
+
         const validateErrorMessage = (message) => {
             Swal.fire({
                 icon: "error",
@@ -84,15 +86,18 @@ const Notifications = () => {
                 timerProgressBar: true,
             });
         };
+
         const fixedParse = (value) => {
             return parseFloat(value.toFixed(2))
         };
+
         const clearList = () => {
             setArrayValues([]);
             setInterestTotal(0);
             setMainDebtTotal(0);
             setDebtTotal(0);
             setMaximumParcelValue(0);
+            setMinimunIncome(0);
         };
 
         const generateList = (financingAmount, annualRate, financingTerm, insurancePercentage, tariffValue) => {
@@ -120,6 +125,7 @@ const Notifications = () => {
 
             return response;
         };
+
         const generateListItem = (
             index, financingValue, monthlyRate, ammortization,
             insurancePercentage, tariffValue, financingTerm
@@ -132,7 +138,8 @@ const Notifications = () => {
             var balance = 0;
 
             if (index === 1) {
-                setMaximumParcelValue(monthlyPayment)
+                setMaximumParcelValue( monthlyPayment );
+                setMinimunIncome( monthlyPayment / 0.25 );
             } else {
                 if (index !== financingTerm) {
                     balance = fixedParse(currentValue - ajValue);
@@ -360,8 +367,13 @@ const Notifications = () => {
                 </view>
 
                 <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
-                <text style={{fontWeight: "bold"}}>Prestação maxima</text>
+                    <text style={{fontWeight: "bold"}}>Prestação maxima</text>
                     <text>{masks.moneyMask(maximumParcelValue)}</text>
+                </view>
+
+                <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
+                    <text style={{fontWeight: "bold"}}>Renda Minima</text>
+                    <text>{masks.moneyMask(minimumIncome)}</text>
                 </view>
 
             </div>
