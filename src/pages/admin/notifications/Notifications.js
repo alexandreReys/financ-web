@@ -91,6 +91,8 @@ const Notifications = () => {
             return parseFloat(value.toFixed(2))
         };
 
+        const thousandCeil = (value) => Math.ceil( value / 1000 ) * 1000;
+
         const clearList = () => {
             setArrayValues([]);
             setInterestTotal(0);
@@ -138,16 +140,16 @@ const Notifications = () => {
             var balance = 0;
 
             if (index === 1) {
-                setMaximumParcelValue( monthlyPayment );
-                setMinimunIncome( monthlyPayment / 0.25 );
+                setMaximumParcelValue( Math.ceil(monthlyPayment) );
+                setMinimunIncome( thousandCeil(monthlyPayment / 0.25) );
             };
-            
+
                 if (index !== financingTerm) {
                     balance = fixedParse(currentValue - ajValue);
                 } else {
                     const dif = fixedParse(currentValue - ajValue);
-                    monthlyPayment += dif;
-                    balance = 0;
+                    ammortization += dif;
+                    // balance = 0;
                 };
             
             return {
