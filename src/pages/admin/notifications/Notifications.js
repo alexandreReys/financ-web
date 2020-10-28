@@ -23,6 +23,11 @@ const Notifications = () => {
     const [insurancePercentage, setInsurancePercentage] = useState(5.799);
     const [tariffValue, setTariffValue] = useState(25);
 
+    const [interestTotal, setInterestTotal] = useState(0);
+    const [mainDebtTotal, setMainDebtTotal] = useState(0);
+    const [debtTotal, setDebtTotal] = useState(0);
+    const [maximumParcelValue, setMaximumParcelValue] = useState(0);
+
     const [arrayValues, setArrayValues] = useState([]);
 
     useEffect(() => {
@@ -33,7 +38,7 @@ const Notifications = () => {
         history.push("/");
     };
 
-    const handleSubmit = () => {
+    const handleCalculate = () => {
 
         const validateFields = (values) => {
             if (!values.estimatedPropertyValueFloat || values.estimatedPropertyValueFloat < 0) {
@@ -82,7 +87,15 @@ const Notifications = () => {
         const fixedParse = (value) => {
             return parseFloat(value.toFixed(2))
         };
-        const setList = (financingAmount, annualRate, financingTerm, insurancePercentage, tariffValue) => {
+        const clearList = () => {
+            setArrayValues([]);
+            setInterestTotal(0);
+            setMainDebtTotal(0);
+            setDebtTotal(0);
+            setMaximumParcelValue(0);
+        };
+
+        const generateList = (financingAmount, annualRate, financingTerm, insurancePercentage, tariffValue) => {
             var response = [];
 
             const calculateMonthlyRate = (annualRate) => {
@@ -96,7 +109,7 @@ const Notifications = () => {
             const ammortization = fixedParse(financingAmount / financingTerm);
 
             for (var index = 1; index <= financingTerm; index++) {
-                const obj = setListItem(
+                const obj = generateListItem(
                     index, financingValue, monthlyRate, ammortization,
                     insurancePercentage, tariffValue, financingTerm
                 );
@@ -107,8 +120,8 @@ const Notifications = () => {
 
             return response;
         };
-        const setListItem = (
-            index, financingValue, monthlyRate, ammortization, 
+        const generateListItem = (
+            index, financingValue, monthlyRate, ammortization,
             insurancePercentage, tariffValue, financingTerm
         ) => {
             const interestValue = fixedParse((financingValue * monthlyRate) / 100);
@@ -118,20 +131,35 @@ const Notifications = () => {
             var monthlyPayment = fixedParse(interestValue + ammortization + insuranceValue + tariffValue);
             var balance = 0;
 
-            if (index !== financingTerm) {
-                balance = fixedParse(currentValue - ajValue);
+            if (index === 1) {
+                setMaximumParcelValue(monthlyPayment)
             } else {
-                const dif = fixedParse(currentValue - ajValue);
-                monthlyPayment += dif;
-                balance = 0;
-            };
-
+                if (index !== financingTerm) {
+                    balance = fixedParse(currentValue - ajValue);
+                } else {
+                    const dif = fixedParse(currentValue - ajValue);
+                    monthlyPayment += dif;
+                    balance = 0;
+                };
+            }
             return {
                 index, financingValue, interestValue, currentValue, ammortization,
                 insuranceValue, tariffValue, ajValue, monthlyPayment, balance
             };
         };
 
+
+
+
+
+
+
+
+
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
         var estimatedPropertyValueFloat = utils.MoneyMaskedToFloat(estimatedPropertyValue);
         var financingAmountFloat = utils.MoneyMaskedToFloat(financingAmount);
         var financingTermFloat = utils.MoneyMaskedToFloat(financingTerm);
@@ -143,17 +171,21 @@ const Notifications = () => {
             estimatedPropertyValueFloat, financingAmountFloat, financingTermFloat,
             annualRateFloat, insurancePercentageFloat, tariffValueFloat,
         })) {
-            setArrayValues([]);
+            clearList();
             return false;
         };
 
 
-        const list = setList(
+        const list = generateList(
             financingAmountFloat, annualRateFloat, financingTermFloat,
             insurancePercentageFloat, tariffValueFloat,
         );
 
         setArrayValues(list);
+
+        setInterestTotal(list.reduce((acc, cur) => acc + cur.interestValue, 0));
+        setMainDebtTotal(list.reduce((acc, cur) => acc + cur.ammortization, 0));
+        setDebtTotal(list.reduce((acc, cur) => acc + cur.monthlyPayment, 0));
     };
 
     return (
@@ -179,14 +211,15 @@ const Notifications = () => {
                 <div>
                     {/* estimatedPropertyValue */}
                     <div className="notifications-input-group">
+                        <label className="notifications-label" htmlFor="title">Valor estimado </label>
                         <label className="notifications-label" htmlFor="title">
-                            Valor estimado do imóvel
+                            do imóvel
                         </label>
                         <TextInputMask
                             kind={"money"}
                             options={{ precision: 2, separator: ',', delimiter: '.', unit: 'R$ ', suffixUnit: '' }}
                             className="notifications-input"
-                            style={{ width: 200 }}
+                            style={{ width: 150 }}
                             name="estimatedPropertyValue"
                             id="estimatedPropertyValue"
                             required
@@ -203,14 +236,13 @@ const Notifications = () => {
                 <div>
                     {/* financingAmount */}
                     <div className="notifications-input-group">
-                        <label className="notifications-label" htmlFor="title">
-                            Valor do Financiamento
-                        </label>
+                        <   label className="notifications-label" htmlFor="title">Valor total</label>
+                        <label className="notifications-label" htmlFor="title">do Financiamento</label>
                         <TextInputMask
                             kind={"money"}
                             options={{ precision: 2, separator: ',', delimiter: '.', unit: 'R$ ', suffixUnit: '' }}
                             className="notifications-input"
-                            style={{ width: 200 }}
+                            style={{ width: 150 }}
                             name="financingAmount"
                             id="financingAmount"
                             required
@@ -224,13 +256,14 @@ const Notifications = () => {
                 <div>
                     {/* financingTerm */}
                     <div className="notifications-input-group">
+                        <label className="notifications-label" htmlFor="title" style={{ color: "white" }}>.</label>
                         <label className="notifications-label" htmlFor="title">
                             Prazo
                         </label>
                         <TextInputMask
                             kind={"only-numbers"}
                             className="notifications-input"
-                            style={{ width: 100 }}
+                            style={{ width: 70 }}
                             name="financingTerm"
                             id="financingTerm"
                             required
@@ -244,9 +277,8 @@ const Notifications = () => {
                 <div>
                     {/* annualRate */}
                     <div className="notifications-input-group">
-                        <label className="notifications-label" htmlFor="title">
-                            % Taxa Efetiva Anual de Juros
-                        </label>
+                        <label className="notifications-label" htmlFor="title">% Taxa Efetiva</label>
+                        <label className="notifications-label" htmlFor="title">Anual de Juros</label>
                         <TextInputMask
                             kind={"money"}
                             options={{ precision: 2, separator: ',', delimiter: '.', unit: '', suffixUnit: '' }}
@@ -265,14 +297,13 @@ const Notifications = () => {
                 <div>
                     {/* insurancePercentage */}
                     <div className="notifications-input-group">
-                        <label className="notifications-label" htmlFor="title">
-                            % Seguro
-                        </label>
+                        <label className="notifications-label" htmlFor="title" style={{ color: "white" }}>.</label>
+                        <label className="notifications-label" htmlFor="title">% Seguro</label>
                         <TextInputMask
                             kind={"money"}
                             options={{ precision: 3, separator: ',', delimiter: '.', unit: '', suffixUnit: '' }}
                             className="notifications-input"
-                            style={{ width: 100 }}
+                            style={{ width: 70 }}
                             name="insurancePercentage"
                             id="insurancePercentage"
                             required
@@ -286,14 +317,13 @@ const Notifications = () => {
                 <div>
                     {/* estimatedPropertyValue */}
                     <div className="notifications-input-group">
-                        <label className="notifications-label" htmlFor="title">
-                            Tarifas
-                        </label>
+                        <label className="notifications-label" htmlFor="title">Valor mensal</label>
+                        <label className="notifications-label" htmlFor="title">das tarifas</label>
                         <TextInputMask
                             kind={"money"}
                             options={{ precision: 2, separator: ',', delimiter: '.', unit: 'R$ ', suffixUnit: '' }}
                             className="notifications-input"
-                            style={{ width: 200 }}
+                            style={{ width: 100 }}
                             name="tariffValue"
                             id="tariffValue"
                             required
@@ -304,16 +334,38 @@ const Notifications = () => {
                     </div>
                 </div>
 
+                <div>
+                    <button className="notifications-button-calcular" onClick={() => handleCalculate()}>
+                        Calcular
+                    </button>
+                </div>
+
             </div>
 
-            <div>
-                <button
-                    style={{ marginTop: 30, marginLeft: 30, padding: 20, borderRadius: 10 }}
-                    onClick={() => handleSubmit()}
-                >
-                    Calcular
-                </button>
+
+            <div style={{ display: "flex" }} className="notifications-content">
+                <view style={{ display: "flex", flexDirection: "column" }}>
+                    <text style={{fontWeight: "bold"}}>Juros devidos</text>
+                    <text>{masks.moneyMask(interestTotal)}</text>
+                </view>
+
+                <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
+                    <text style={{fontWeight: "bold"}}>Principal devido</text>
+                    <text>{masks.moneyMask(mainDebtTotal)}</text>
+                </view>
+
+                <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
+                    <text style={{fontWeight: "bold"}}>Total devido</text>
+                    <text>{masks.moneyMask(debtTotal)}</text>
+                </view>
+
+                <view style={{ display: "flex", flexDirection: "column", marginLeft: 30 }}>
+                <text style={{fontWeight: "bold"}}>Prestação maxima</text>
+                    <text>{masks.moneyMask(maximumParcelValue)}</text>
+                </view>
+
             </div>
+
 
             <table className="table" style={{ marginTop: 30 }}>
                 <thead style={{ fontSize: "0.9rem" }}>

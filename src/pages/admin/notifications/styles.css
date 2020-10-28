@@ -73,3 +73,20 @@
   background-color: #fff;
 
 }
+
+.notifications-button-calcular {
+  margin-top: 23px;
+  border: 1px solid rgb(206, 206, 206);
+  width: 160px;
+  padding: 19px 0 14px;
+  border-radius: 5px;
+  box-shadow: 0 3px 3px #000;
+  background-color: #4682b4;
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+.notifications-button-calcular:hover {
+  background-color: navy;
+}
