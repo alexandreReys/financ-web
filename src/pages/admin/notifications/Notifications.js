@@ -140,7 +140,8 @@ const Notifications = () => {
             if (index === 1) {
                 setMaximumParcelValue( monthlyPayment );
                 setMinimunIncome( monthlyPayment / 0.25 );
-            } else {
+            };
+            
                 if (index !== financingTerm) {
                     balance = fixedParse(currentValue - ajValue);
                 } else {
@@ -148,7 +149,7 @@ const Notifications = () => {
                     monthlyPayment += dif;
                     balance = 0;
                 };
-            }
+            
             return {
                 index, financingValue, interestValue, currentValue, ammortization,
                 insuranceValue, tariffValue, ajValue, monthlyPayment, balance
